@@ -46,6 +46,8 @@ class WordSearch
 	protected $maxRowIndexAllowed;
 	protected $maxColumnIndexAllowed;
 
+	protected $niceResult = false;
+
 	public function __construct(array $searching, array $words)
 	{
 		$this->searching = $searching;
@@ -193,7 +195,8 @@ class WordSearch
 			$currentRowIndex = $element[0];
 			$currentColumnIndex = $element[1];
 			$path = $element[2];
-			$weDidIt["0-" . $word[0]] = array($currentRowIndex, $currentColumnIndex);
+
+			$weDidIt[] = $currentRowIndex . "," . $currentColumnIndex;
 
 			$checkFunc = null;
 
@@ -239,7 +242,7 @@ class WordSearch
 				if(($result = $checkFunc($currentRowIndex, $currentColumnIndex, $word[$i]))) {
 					$currentRowIndex = $result[0];
 					$currentColumnIndex = $result[1];
-					$weDidIt[$i . "-" . $word[$i]] = array($currentRowIndex, $currentColumnIndex);
+					$weDidIt[] = $currentRowIndex . "," . $currentColumnIndex;
 				} else {
 					$failed = true;
 					break;
@@ -256,13 +259,17 @@ class WordSearch
 		return $weDidIt;
 	}
 
-	public function solve()
+	public function solve($wordIndex = true)
 	{
 		$results = array();
 		foreach($this->words as $word) {
 			$result = $this->findWord($word);
 			if(!empty($result)) {
-				$results[$word] = $result;
+				if($wordIndex) {
+					$results[$word] = $result;
+				} else {
+					$results = array_merge($results, $result);
+				}
 			}
 		}
 
@@ -281,7 +288,18 @@ $breakAllWords = explode(PHP_EOL, $allWords);
 
 $wordSearch = new WordSearch($search, $breakAllWords);
 
-$solved = $wordSearch->solve();
+$solved = $wordSearch->solve(false);
 
-echo "Words found (" . count($solved) . " out of " . count($breakAllWords) . ") " . implode(', ', array_keys($solved));
-echo "<pre>" . print_r($solved, true) . "</pre>";
+echo "<table border\"0\">";
+foreach($search as $rowIndex => $row) {
+	echo "<tr>";
+	foreach($row as $letterIndex => $letter) {
+		if(in_array($rowIndex . "," . $letterIndex, $solved)) {
+			echo "<td style=\"color:red;font-weight:bold;\">" . $letter . "</td>";
+		} else {
+			echo "<td>" . $letter . "</td>";
+		}
+	}
+	echo "</tr>";
+}
+echo "</table>";

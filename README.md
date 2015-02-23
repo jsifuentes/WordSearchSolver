@@ -2,6 +2,8 @@
 
 This is a word search solver created in PHP. It's all in one file, but can be broken up. The main area of the file is the WordSearch class.
 
+Using the program out of the box will print out a finished and marked word search puzzle. Sorry for the HTML clutter at the bottom of the script that generates it.
+
 You can modify the following variables:
 ```php
 // WORDS TO FIND
